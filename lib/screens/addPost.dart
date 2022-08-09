@@ -1,4 +1,6 @@
+import 'package:blogapp/db/PostService.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AddPost extends StatefulWidget {
   @override
@@ -7,6 +9,9 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   final GlobalKey<FormState> formkey = new GlobalKey();
+
+  String? title;
+  String? body;
 
 
   @override
@@ -25,12 +30,17 @@ class _AddPostState extends State<AddPost> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
-                      labelText: "Post tilte",
+                      labelText: "Post title",
                       border: OutlineInputBorder()
                   ),
                   validator: (val){
-
+                    if(val!.isEmpty ){
+                      return "title field cant be empty";
+                    }else if(val.length > 16){
+                      return "title cannot have more than 16 characters ";
+                    }
                   },
+                  onSaved: (val) => title = val,
                 ),
               ),
               Padding(
@@ -41,21 +51,37 @@ class _AddPostState extends State<AddPost> {
                       border: OutlineInputBorder()
                   ),
                   validator: (val){
-                    // if(val.isEmpty){
-                    //   return "body field cant be empty";
-                    // }
+                    if(val!.isEmpty){
+                      return "body field cant be empty";
+                    }
                   },
+                  onSaved: (val) => body = val,
                 ),
               ),
             ],
           )),
       floatingActionButton: FloatingActionButton(onPressed: (){
-        Navigator.pop(context);
-//        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+        insertPost();
       },
         child: Icon(Icons.add, color: Colors.white,),
         backgroundColor: Colors.red,
         tooltip: "add a post",),
     );
   }
+
+
+  void insertPost() {
+    final FormState? form = formkey.currentState;
+    if(form!.validate()){
+      form.save();
+      PostService postService = PostService();
+      postService.addPost(post: {"BODY":body,"TITLE":title,"DATE": DateTime.now().microsecondsSinceEpoch});
+      form.reset();
+      Get.close(1);
+
+
+      // postService.addPost();
+    }
+  }
+
 }
