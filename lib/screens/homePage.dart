@@ -1,5 +1,6 @@
 import 'package:blogapp/db/PostService.dart';
 import 'package:blogapp/screens/addPost.dart';
+import 'package:blogapp/screens/editPost.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   late Map data;
   bool isLoading = true;
   List postList = [];
- Query query  = FirebaseDatabase.instance.ref().child("posts");
+  Query query  = FirebaseDatabase.instance.ref().child("posts");
 
 
   @override
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: FirebaseAnimatedList(query: query, itemBuilder: (BuildContext context, DataSnapshot snapshot, Animation<double> animation, int index) {
         Map student = snapshot.value as Map;
-        return blogCard(title: student["TITLE"],body: student["BODY"],date: student["DATE"]);
+        return blogCard(title: student["TITLE"],body: student["BODY"],date: student["DATE"],key: snapshot.key);
 
       },),
       floatingActionButton: FloatingActionButton(
@@ -58,7 +59,7 @@ Widget blogCard({required String title,required String body,int? date,String? ke
   return  InkWell(
     onTap: ()
     {
-       Get.to(() => EditUserDetails(title: title, body: body));
+       Get.to(() => EditUserDetails(title: title, body: body,keyy: key!));
     },
     child: Padding(
       padding: const EdgeInsets.all(8.0),
